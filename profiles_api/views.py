@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
 from profiles_api import serializers
 
 class HelloApiView(APIView):
@@ -33,3 +34,38 @@ class HelloApiView(APIView):
         return Response({'method':'PATCH'})
     def delete(seld,request,pk=None):
         return Response({'method':'DELETE'})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    serializer_class = serializers.HelloSerializer
+    def list(self,request):
+
+        a_viewset = [
+                'Uses HTTP methods as function (list,create,update,partial_update)',
+                'Is similar to a traditional Django view',
+                'Gives you most control over app logic',
+                'is mapped manually to URLs',
+                ]
+        return Response({'message':'Hello!', 'a_viewset':a_viewset})
+
+    def create(self,request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            message = f'Hello {name}'
+            return Response({'message':message})
+        else:
+            return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self,request,pk=None):
+        return Response({'http_method':'GET'})
+
+    def update(self,request,pk=None):
+        return Response({'http_method':'PUT'})
+
+    def partial_update(self,request,pk=None):
+        return Response({'http_method':'PATCH'})
+
+    def destroy(self,request,pk=None):
+        return Response({'http_method':'DELETE'})
